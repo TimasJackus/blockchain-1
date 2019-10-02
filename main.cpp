@@ -4,6 +4,8 @@
 #include <bitset>
 #include <cmath>
 #include <sstream>
+#include <time.h>
+
 const int HASH_LENGTH = 64;
 
 long getCharsSum(std::string str) {
@@ -119,7 +121,7 @@ std::string hash(std::string input) {
     long val = test * (i + 3);
     while (val >= HASH_LENGTH) {
       int index = val % HASH_LENGTH;
-      val = val / 2.5;
+      val = val / 1.2;
       bs[i] = bs[i].test(index) == 1 ? bs[i].reset(index) : bs[i].set(index);
       if (index % 3 == 0) {
         bs[i].flip();
@@ -130,13 +132,28 @@ std::string hash(std::string input) {
   return bitsetToHex(bs);
 }
 
-void readFromFile(std::string filename) {
+std::string readFromFile(std::string filename) {
   std::ifstream inFile;
   inFile.open(filename);
   std::string input;
   getline(inFile, input);
-  std::cout << hash(input) << std::endl;
   inFile.close();
+  return hash(input);
+}
+
+double measureTime(std::string filename) {
+  std::ifstream inFile;
+  inFile.open(filename);
+  std::string input;
+  double timeElapsed = 0;
+
+  while (getline(inFile, input)) {
+    clock_t tStart = clock();
+    hash(input);
+    timeElapsed += (double)(clock() - tStart)/CLOCKS_PER_SEC;
+  }
+  inFile.close();
+  return timeElapsed;
 }
 
 void compare(std::string filename) {
@@ -146,9 +163,9 @@ void compare(std::string filename) {
   double mean = 0;
   double max = 0;
   double min = 100;
-  // one line
   std::string input;
   int i = 0, k = 0;
+
   while (getline(inFile, input)) {
     std::istringstream iss(input);
     std::string sub1;
@@ -173,28 +190,56 @@ void compare(std::string filename) {
 
   mean = (double)mean / i;
 
-  std::cout << "mean: " << mean << std::endl;
-  std::cout << "max: " << max << std::endl;
-  std::cout << "min: " << min << std::endl;
+  std::ofstream outFile;
+  outFile.open("outputs/comparison.txt");
+  outFile << "Mean: " << mean << "%" << std::endl;
+  outFile << "Max: " << max << "%" << std::endl;
+  outFile << "Min: " << min << "%" << std::endl;
 
   if (k == 0) {
-    std::cout << "TEST PASSED!" << std::endl;
+    outFile << "TEST PASSED!" << std::endl;
   } else {
-    std::cout << "TEST FAILED...  " << std::endl;
-    std::cout << "Failed pairs: " << k << std::endl;
+    outFile << "TEST FAILED...  " << std::endl;
+    outFile << "Failed pairs: " << k;
   }
-  inFile.close();
+  outFile.close();
+  std::cout << "Output file: outputs/comparison.txt" << std::endl;
 }
 
 int main(int argc, const char * argv[]) {
-  std::cout << hash("kietuva") << std::endl;
-  if(std::string(argv[1]) == "--file") {
-    std::cout << argv[2] << std::endl;
-    readFromFile(std::string(argv[2]));
+  if(std::string(argv[1]) == "--files") {
+    std::ofstream outFile;
+    outFile.open("outputs/files.txt");
+    for (int i = 2; i < argc; i++) {
+      outFile << argv[i] << ": " << readFromFile(std::string(argv[i])) << std::endl;
+    }
+    outFile.close();
+    std::cout << "Output file: outputs/files.txt" << std::endl;
   }
-  // if(std::string(argv[1]) == "--compare") {
-  //   std::cout << argv[2] << std::endl;
-  //   compare(std::string(argv[2]));
-  // }
+  
+  else if(std::string(argv[1]) == "--compare") {
+    compare(std::string(argv[2]));
+  }
+  
+  else if(std::string(argv[1]) == "--string") {
+    std::ofstream outFile;
+    outFile.open("outputs/string.txt");
+    outFile << hash(std::string(argv[2]));
+    outFile.close();
+    std::cout << "Output file: outputs/string.txt" << std::endl;
+  }
+  
+  else if(std::string(argv[1]) == "--time") {
+    std::ofstream outFile;
+    outFile.open("outputs/measured.txt");
+    outFile << measureTime(std::string(argv[2])) << " s.";
+    outFile.close();
+    std::cout << "Output file: outputs/measured.txt" << std::endl;
+  }
+  
+  else {
+    std::cout << "Something went wrong, look at README.md for more help." << std::endl;
+  }
+
   return 0;
 }

@@ -33,17 +33,17 @@ std::string changeRandomString(std::string str1) {
 
 
 int main() { 
-  // std::ofstream ofs("test-data/string-pairs-1.txt", std::ofstream::out);
-  // for (int i = 0; i < 100000; i++) {
-  //   ofs << getRandomString() << " " << getRandomString() << std::endl;
-  // }
-  // ofs.close();
-
-  std::ofstream ofs("test-data/string-pairs-2.txt", std::ofstream::out);
-  for (int i = 0; i < 100000; i++) {
-    std::string str1 = getRandomString();
-    std::string str2 = changeRandomString(str1);
-    ofs << str1 << " " << str2 << std::endl;
+  std::ofstream ofs("test-data/string-pairs-1.txt", std::ofstream::out);
+  for (int i = 0; i < 1000000; i++) {
+    ofs << getRandomString() << " " << getRandomString() << std::endl;
   }
   ofs.close();
+
+  // std::ofstream ofs("test-data/string-pairs-2.txt", std::ofstream::out);
+  // for (int i = 0; i < 100000; i++) {
+  //   std::string str1 = getRandomString();
+  //   std::string str2 = changeRandomString(str1);
+  //   ofs << str1 << " " << str2 << std::endl;
+  // }
+  // ofs.close();
 }
