@@ -10,12 +10,12 @@ const int HASH_LENGTH = 64;
 
 long getCharsSum(std::string str) {
   long sum = 0;
-  int d = 0;
+  int x = 0;
   for(int i = 0; i < str.length(); i++) {
     sum += int(str[i]) * (i + 3);
-    d = (i + 7) * int(str[i]);
+    x = (i + 7) * int(str[i]);
   }
-  sum = sum * 1337 * (64 % str.length() + int(str[0])) + d;
+  sum = sum * 1337 * (64 % str.length() + int(str[0])) + x;
   return sum;
 }
 
@@ -99,7 +99,7 @@ double getPercentage(std::string str1, std::string str2) {
   double sameBits = 0;
   if (str1.length() == str2.length()) {
     for (int i = 0; i < str1.length(); i++) {
-      if (str1[i] == str2[i]) {
+      if (str1[i] != str2[i]) {
         sameBits += 1;
       }
     }
@@ -116,9 +116,9 @@ std::string hash(std::string input) {
     bs[i] = std::bitset<HASH_LENGTH>{}.set();
   }
 
-  long test = getCharsSum(input);
+  long charsSum = getCharsSum(input);
   for(int i = 0; i < 4; i++) {
-    long val = test * (i + 3);
+    long val = charsSum * (i + 3);
     while (val >= HASH_LENGTH) {
       int index = val % HASH_LENGTH;
       val = val / 1.2;
@@ -168,15 +168,16 @@ void compare(std::string filename) {
 
   while (getline(inFile, input)) {
     std::istringstream iss(input);
-    std::string sub1;
-    std::string sub2;
-    iss >> sub1;
-    iss >> sub2;
+    std::string str1;
+    std::string str2;
+    iss >> str1;
+    iss >> str2;
     
-    if (hash(sub1).compare(hash(sub2)) == 0) {
+    if (hash(str1).compare(hash(str2)) == 0) {
       k++;
+      std::cout << str1 << " " << str2 << std::endl;
     }
-    percentage = getPercentage(hash(sub1), hash(sub2));
+    percentage = getPercentage(hash(str1), hash(str2));
 
     mean += percentage;
     if (percentage < min) {

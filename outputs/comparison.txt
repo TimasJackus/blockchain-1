@@ -1,4 +1,4 @@
-Mean: 6.24995%
-Max: 31.25%
-Min: 0%
+Mean: 93.7501%
+Max: 100%
+Min: 68.75%
 TEST PASSED!
