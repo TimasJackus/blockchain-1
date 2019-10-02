@@ -1,18 +1,13 @@
 #include <iostream>
 #include <string.h>
+#include <fstream>
 #include <bitset>
 #include <cmath>
 const int HASH_LENGTH = 64;
 
 long calcVal(long val) {
-  if(val > 99999999) {
-    while(val > 99999999) {
-      val = val / 7;
-    }
-    return val;
-  }
-  if(val < 10000000) {
-    while(val < 99999999) {
+  if(val < 1000000000) {
+    while(val < 1000000000) {
       val = val * 7;
     }
     return val;
@@ -24,12 +19,13 @@ long calcVal(long val) {
 long getCharsSum(std::string str) {
   long sum = 0;
   for(int i = 0; i < str.length(); i++) {
-    sum += int(str[i]) * (i + 1);
+    // sum += (str.length() + int(str[i]) + (i + 3)) * 3;
+    sum += int(str[i]) + (i + 1);
   }
   return sum;
 }
 
-std::string hash(std::string input) {
+void hash(std::string input) {
   std::bitset<HASH_LENGTH> bs[4];
   for(int i = 0; i < 4; i++) {
     bs[i] = std::bitset<HASH_LENGTH>{}.set();
@@ -47,14 +43,46 @@ std::string hash(std::string input) {
       }
     }
   }
-  for(int i = 0; i < 4; i++) {
-    printf("%08x", bs[i].to_ullong());
+  char buffer[32];
+  sprintf(buffer, "%08x%08x%08x%08x", bs[0].to_ullong(), bs[1].to_ullong(), bs[2].to_ullong(), bs[3].to_ullong());
+  std::cout << buffer;
+  if(strcmp(buffer, "81165010e5faafb63ffeaefb10000280") == 0) {
+    // std::cout << "TRUE" << std::endl;
+    // TRUE
   }
   std::cout << std::endl;
-  return input;
 }
 
-int main() {
+void readFromFile(std::string filename) {
+  std::ifstream inFile;
+  inFile.open(filename);
+  std::string input;
+  getline(inFile, input);
+  hash(input);
+  inFile.close();
+}
+
+void compare(std::string filename) {
+  std::ifstream inFile;
+  inFile.open(filename);
+  std::string input;
+  getline(inFile, input);
+  hash(input);
+  inFile.close();
+}
+
+int main(int argc, const char * argv[]) {
+  // hash("kietuva");
   hash("lietuva");
+  // if(std::string(argv[1]) == "--file") {
+  //   std::cout << argv[2] << std::endl;
+  //   readFromFile(std::string(argv[2]));
+  // }
+  // if(std::string(argv[1]) == "--compare") {
+  //   std::cout << argv[2] << std::endl;
+  //   compare(std::string(argv[2]));
+  // }
+  // for (int i = 0; i < argc; ++i) 
+  //     std::cout << argv[i] << "\n"; 
   return 0;
 }
